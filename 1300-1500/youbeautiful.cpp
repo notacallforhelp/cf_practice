@@ -147,48 +147,7 @@ prime[0]=prime[1]=false;
 
 void solve()
 {
-    int n; cin>>n;
-    vector<int> A(n); for(auto &i:A) cin>>i;
-
-    vector<int> start(n);
-    vector<int> end(n);
-
-    set<int> o;
-    set<int> p;
-
-    for(int i=0;i<n;i++)
-    {
-        if(p.count(A[i])==0)
-        {
-            start[i]=1;
-            p.insert(A[i]);
-        }
-    }
-    for(int i=n-1;i>=0;i--)
-    {
-        if(o.count(A[i])==0)
-        {
-            end[i]=1;
-            o.insert(A[i]);
-        }
-    }
-
-    int ans = 0; int cur = 0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(start[i])
-        {
-            ++cur;
-        }
-        if(end[i])
-        {
-            ans += cur;
-        }
-    }
-
-    cout << ans << endl;
-
+    
 }
 
 int32_t main()
