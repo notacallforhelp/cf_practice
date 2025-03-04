@@ -145,35 +145,53 @@ prime[0]=prime[1]=false;
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
+const int N = 3e5+10;
+int nxt[N][10];
+
 void solve()
 {
-    string s; cin>>s;
-    int n = s.length();
+    string s; cin>>s; int n = s.length();
     int m; cin>>m;
-    string l,r; cin>>l>>r;
+    string l, r; cin>>l>>r; 
+    // next[i][j] stores the next position of digit j from position i, including pos i itself
+
+    for(int i=0;i<10;i++)
+    {
+        nxt[n-1][i]=2*n;
+    }
+    nxt[n-1][s[n-1]-'0']=n-1;
+
+    for(int i=n-2;i>=0;i--)
+    {
+        for(int j=0;j<10;j++)
+        {
+            nxt[i][j] = nxt[i+1][j];
+        }
+        nxt[i][s[i]-'0'] = i;
+    }
 
     int start = 0;
 
     for(int i=0;i<m;i++)
     {
+        if(start>n-1)
+        {
+            cout << "YES" << endl;
+            return;
+        }
         int track = start;
-
-        for(int j=l[i];j<=r[i];j++)
+        for(int k=l[i];k<=r[i];k++)
         {
-            int curr = start;
-            while(curr<n&&s[curr]!=j)
+            int dig = k-'0';
+            if(nxt[start][dig]==2*n)
             {
-                ++curr;
+                cout << "YES" << endl;
+                return;
             }
-            track = max(track,curr);
+            track = max(track,nxt[start][dig]);
         }
-        if(track==n)
-        {
-            cout << "YES" << endl; return;
-        }
-        start = track+1;
+        start = track +1;
     }
-
     cout << "NO" << endl;
 }
 

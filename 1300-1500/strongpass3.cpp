@@ -147,31 +147,40 @@ prime[0]=prime[1]=false;
 
 void solve()
 {
-    string s; cin>>s;
-    int n = s.length();
+    string s; cin>>s; int n = s.length();
     int m; cin>>m;
     string l,r; cin>>l>>r;
+
+    vector<int> pos[10];
+
+    for(int i=0;i<n;i++)
+    {
+        int k = s[i]-'0';
+        pos[k].push_back(i);
+    }
 
     int start = 0;
 
     for(int i=0;i<m;i++)
     {
         int track = start;
-
-        for(int j=l[i];j<=r[i];j++)
+        for(int k=l[i];k<=r[i];k++)
         {
-            int curr = start;
-            while(curr<n&&s[curr]!=j)
+            int digit = k-'0';
+            if(pos[digit].size()==0)
             {
-                ++curr;
+                cout << "YES" << endl;
+                return;
             }
-            track = max(track,curr);
+            auto it = lower_bound(pos[digit].begin(),pos[digit].end(),start);
+            if(it==pos[digit].end())
+            {
+                cout << "YES" << endl;
+                return;
+            }
+            track = max(track,*it);
         }
-        if(track==n)
-        {
-            cout << "YES" << endl; return;
-        }
-        start = track+1;
+        start = track + 1;
     }
 
     cout << "NO" << endl;

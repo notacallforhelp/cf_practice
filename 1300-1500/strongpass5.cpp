@@ -147,34 +147,9 @@ prime[0]=prime[1]=false;
 
 void solve()
 {
-    string s; cin>>s;
-    int n = s.length();
+    string s; cin>>s; int n = s.length();
     int m; cin>>m;
     string l,r; cin>>l>>r;
-
-    int start = 0;
-
-    for(int i=0;i<m;i++)
-    {
-        int track = start;
-
-        for(int j=l[i];j<=r[i];j++)
-        {
-            int curr = start;
-            while(curr<n&&s[curr]!=j)
-            {
-                ++curr;
-            }
-            track = max(track,curr);
-        }
-        if(track==n)
-        {
-            cout << "YES" << endl; return;
-        }
-        start = track+1;
-    }
-
-    cout << "NO" << endl;
 }
 
 int32_t main()
