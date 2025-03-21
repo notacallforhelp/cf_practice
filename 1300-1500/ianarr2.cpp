@@ -150,40 +150,34 @@ void solve()
     int n; cin>>n;
     vector<int> A(n); for(auto &i:A)cin>>i;
 
-    int lp = -1e13;
-
-    for(int i=0;i<n;i++)
+    vector<int> B;
+    
+    for(int i=1;i<n;i++)
     {
-        if(i==0)
-        {
-            int diff = A[i]-lp;
-            A[i+1] -= diff;
-            A[i]=lp;
-        }
-        else if(i>0&&i<n-1)
-        {
-            int diff = A[i]-A[i-1];
-            A[i] -= diff;
-            A[i+1] -= diff;
-        }
+        B.push_back(A[i]-A[i-1]);
     }
 
-    /*for(auto &ele:A)
-    {
-        cout << ele << " " ;
-    }
-    cout << endl;*/
-
-    vector<int> B = A;
-    sort(B.begin(),B.end());
-
-    if(A==B)
+    if(n%2!=0)
     {
         cout << "YES" << endl;
     }
     else
     {
-        cout << "NO" << endl;
+        int sz = B.size();
+        int s = 0;
+        for(int i=0;i<sz;i+=2)
+        {
+            s += B[i];
+        }
+
+        if(s>=0)
+        {
+            cout << "YES" << endl;
+        }
+        else
+        {
+            cout << "NO" << endl;
+        }
     }
 }
 
