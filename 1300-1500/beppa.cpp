@@ -147,48 +147,32 @@ prime[0]=prime[1]=false;
 
 void solve()
 {
-    int n,m,d; cin>>n>>m>>d;
-    vector<int> P(n); for(auto &i:P)cin>>i;
-    vector<int> A(m); for(auto &i:A)cin>>i;
+    int n; cin>>n;
+    vector<int> A(n);
+    deque<int> B;
 
-    //map<int,int> M;
-    vector<int> idx(n+1);
-
+    for(auto &i:A)cin>>i;
     for(int i=0;i<n;i++)
     {
-        //M[P[i]] = i+1;
-        idx[P[i]]=i+1;
+        int x; cin>>x;
+        B.push_back(x);
     }
 
-    vector<pair<int,int>> diff;
+    int output = 0;
 
-    for(int i=1;i<m;i++)
+    for(int i=n-1;i>=0;i--)
     {
-        int sa = idx[A[i-1]]-1 + n-idx[A[i]];
-        diff.push_back({idx[A[i]]-idx[A[i-1]],sa});
-    }
-
-    for(auto &ele:diff)
-    {
-        if(ele.first<0||ele.first>d)
+        int lst = B.back();
+        if(lst==A[i])
         {
-            cout << 0 << endl;
-            return;
+            B.pop_back();
+        }
+        else
+        {
+            ++output;
         }
     }
-
-    int ans = 1e13;
-
-    for(int i=0;i<diff.size();i++)
-    {
-        ans = min(ans,diff[i].first);
-
-        if(diff[i].second>=d+1-diff[i].first)
-        {
-            ans = min(ans,d+1-diff[i].first);
-        }
-    }
-    cout << ans << endl;
+    cout << output << endl;
 }
 
 int32_t main()
