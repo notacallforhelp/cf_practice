@@ -152,41 +152,33 @@ prime[0]=prime[1]=false;
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-int fun(vector<int> &P,int l,int r)
-{
-    if(r-l==1) return 0;
-    int mid = l + (r-l)/2;
-
-    int mx_left = *max_element(P.begin()+l,P.begin()+mid);
-    int mx_right = *max_element(P.begin()+mid,P.begin()+r);
-
-    int ans = 0;
-
-    if(mx_left>mx_right)
-    {
-        ++ans;
-        for(int i=0;i<(mid-l);i++)
-        {
-            swap(P[l+i],P[mid+i]);
-        }
-    }
-    return fun(P,l,mid)+fun(P,mid,r)+ans;
-}
-
 void solve()
 {
-    int m; cin>>m;
-    vector<int> P(m); for(auto &ele:P)cin>>ele;
+    int n; cin>>n;
+    vector<int> A(n);
+    for(int i=0;i<n;i++)
+    {
+        cin>>A[i];
+    }
 
-    int op = fun(P,0ll,m);
-    if(is_sorted(P.begin(),P.end()))
+    int output = 0;
+
+    int left = 0;
+    int right = 0;
+    int val = 1;
+
+    while(right<n)
     {
-        cout << op << endl;
+        while(left<n&&val>A[right])
+        {
+            ++left;
+            --val;
+        }
+        output += right-left+1;
+        ++right;
+        ++val;
     }
-    else
-    {
-        cout << -1 << endl;
-    }
+    cout << output << endl;
 }
 
 int32_t main()
