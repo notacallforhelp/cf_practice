@@ -152,52 +152,48 @@ prime[0]=prime[1]=false;
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
+const int N = 1e5+10;
+int A[N];
+int degree[N];
+int X[N];
+int Y[N];
+int n,m;
+int ans;
 
 void solve()
 {
-    int n,m; cin>>n>>m;
-    vector<int> A(n); for(auto &i:A)cin>>i;
-    map<int,set<int>> M;
-    for(int i=0;i<m;i++)
+    cin>>n>>m;
+    for(int i=1;i<=n;i++)
     {
-        int x,y; cin>>x>>y;
-        M[x].insert(y);
-        M[y].insert(x);
+        degree[i]=0;
+        cin>>A[i];
     }
-    vector<pair<int,int>> prs;
-    for(int i=0;i<n;i++)
+    for(int i=1;i<=m;i++)
     {
-        prs.push_back({A[i],i+1});
+        cin>>X[i]>>Y[i];
+        ++degree[X[i]];
+        ++degree[Y[i]];
     }
-    sort(prs.begin(),prs.end());
+    ans = INT_MAX;
     if(m%2==0)
     {
-        cout << 0 << endl; return;
+        ans=0;
     }
-
-    int mn = 1e9;
-    for(int i=0;i<n;i++)
+    for(int i=1;i<=n;i++)
     {
-        int ele = prs[i].second;
-        int val = prs[i].first;
-        if(M[ele].size()>0&&(m-M[ele].size())%2==0)
+        if(degree[i]%2==1)
         {
-            mn = min(mn,val);
-        }
-        else if(M[ele].size()>0&&(m-M[ele].size()%2)!=0)
-        {
-            //cout << ele << " " << val << endl;
-            int sz = M[ele].size();
-            for(auto &e:M[ele])
-            {
-                if((m-(M[e].size()-1+sz))%2==0)
-                {
-                    mn = min(mn,val+A[e-1]);
-                }
-            }
+            ans = min(ans,A[i]);
         }
     }
-    cout << mn << endl;
+    for(int i=1;i<=m;i++)
+    {
+        if(degree[X[i]]%2==0&&degree[Y[i]]%2==0)
+        {
+            ans = min(ans,A[X[i]]+A[Y[i]]);
+        }
+    }
+    cout << ans << endl;
 }
 
 int32_t main()

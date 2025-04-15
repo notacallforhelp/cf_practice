@@ -152,52 +152,48 @@ prime[0]=prime[1]=false;
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
+const int N = 2e5+10;
+int A[N];
 
 void solve()
 {
-    int n,m; cin>>n>>m;
-    vector<int> A(n); for(auto &i:A)cin>>i;
-    map<int,set<int>> M;
-    for(int i=0;i<m;i++)
+    int n; cin>>n;
+    vector<pair<int,int>> prs; //{val,idx}
+    for(int i=1;i<=n;i++)
     {
-        int x,y; cin>>x>>y;
-        M[x].insert(y);
-        M[y].insert(x);
-    }
-    vector<pair<int,int>> prs;
-    for(int i=0;i<n;i++)
-    {
-        prs.push_back({A[i],i+1});
+        cin>>A[i];
+        if(i>A[i])
+        {
+            prs.push_back({A[i],i});
+        }
     }
     sort(prs.begin(),prs.end());
-    if(m%2==0)
+    int output = 0;
+    int sz = prs.size();
+    for(int i=1;i<=n;i++)
     {
-        cout << 0 << endl; return;
-    }
-
-    int mn = 1e9;
-    for(int i=0;i<n;i++)
-    {
-        int ele = prs[i].second;
-        int val = prs[i].first;
-        if(M[ele].size()>0&&(m-M[ele].size())%2==0)
+        if(i>A[i])
         {
-            mn = min(mn,val);
-        }
-        else if(M[ele].size()>0&&(m-M[ele].size()%2)!=0)
-        {
-            //cout << ele << " " << val << endl;
-            int sz = M[ele].size();
-            for(auto &e:M[ele])
+            int low = 0;
+            int high = sz-1;
+            int idx = sz;
+            while(low<=high)
             {
-                if((m-(M[e].size()-1+sz))%2==0)
+                int mid = low + (high-low)/2;
+                if(prs[mid].first>i)
                 {
-                    mn = min(mn,val+A[e-1]);
+                    idx = min(idx,mid);
+                    high=mid-1;
+                }
+                else
+                {
+                    low=mid+1;
                 }
             }
+            output += sz-idx;
         }
     }
-    cout << mn << endl;
+    cout << output << endl;
 }
 
 int32_t main()
