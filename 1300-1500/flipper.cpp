@@ -157,6 +157,50 @@ void solve()
     int n; cin>>n;
     vector<int> P(n); for(auto &i:P)cin>>i;
     
+    auto it = max_element(++P.begin(),P.end());
+    int idx = it-P.begin();
+
+    if(idx==n-1)
+    {
+        cout << P[idx] << " ";
+
+        int g = idx-1;
+
+        while(g>=0&&P[g]>=P[0])
+        {
+            cout << P[g] << " ";
+            --g;
+        }
+
+        for(int i=0;i<=g;i++)
+        {
+            cout << P[i] << " ";
+        }
+        cout << endl;
+    }
+    else
+    {
+        for(int i=idx;i<n;i++)
+        {
+            cout << P[i] << " ";
+        }
+
+         // A[idx-1] is compulsory
+        cout << P[idx-1] << " ";
+        int g = idx-2;
+
+        while(g>=0&&P[g]>=P[0])
+        {
+            cout << P[g] << " ";
+            --g;
+        }
+
+        for(int i=0;i<=g;i++)
+        {
+            cout << P[i] << " ";
+        }
+        cout << endl;
+    }
 }
 
 int32_t main()
