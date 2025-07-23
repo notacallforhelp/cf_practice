@@ -152,70 +152,119 @@ prime[0]=prime[1]=false;
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
+const int INF = 1e12;
+
+int check(int mid,vector<int> &A,int n)
+{
+    int l=0,g=0;
+    for(int i=1;i<=n;i++)
+    {
+        l=max(l+A[i],A[i]);
+        g=max(g,l);
+    }
+    return g;
+}
+
 void solve()
 {
     int n,k; cin>>n>>k;
     string s; cin>>s;
     vector<int> A(n+1);
-
-    bool lol = false;
-
     for(int i=1;i<=n;i++)
     {
         cin>>A[i];
-        if(A[i]>k)
-        {
-            lol=true;
-        }
     }
 
-    if(lol)
-    {
-        cout << "No" << endl;
-        return;
-    }
-
-    vector<int> left(n+2);
-    vector<int> right(n+2);
-
-    for(int i=n;i>=1;i--)
-    {
-        right[i]=max(max(right[i+1]+A[i],A[i]),0ll);
-    }
+    bool avl = false;
+    int g = 0;
+    int l = 0;
 
     for(int i=1;i<=n;i++)
     {
         if(s[i-1]=='0')
         {
-            int sum = left[i]+right[i];
-            int req = k-sum;
-            A[i]=req;
+            avl = true;
         }
-        left[i+1]=max(max(left[i]+A[i],A[i]),0ll);
+        l = max(l+A[i],A[i]);
+        g = max(l,g);
+    }
+    //cout << avl << endl;
+    if(!avl)
+    {
+        if(g!=k)
+        {
+            cout << "No" << endl;
+        }
+        else
+        {
+            cout << "Yes" << endl;
+            for(int i=1;i<=n;i++)
+            {
+                cout << A[i] << " ";
+            }
+            cout << endl;
+        }
+        return;
     }
 
-    int y = 0;
-    int lcl = 0;
+    int pos = -1;
 
     for(int i=1;i<=n;i++)
     {
-        lcl = max(A[i],lcl+A[i]);
-        y = max(y,lcl);
+        if(s[i-1]=='0')
+        {
+            if(pos==-1)
+            {
+                pos=i;
+            }
+            else
+            {
+                A[i]=-INF;
+            }
+        }
+    }
+    //cout << "hello" << endl;
+
+    int low = -INF;
+    int high = k;
+    bool pass = false;
+
+    while(low<=high)
+    {
+        int mid = low + (high-low)/2;
+
+        A[pos]=mid;
+
+        int j = check(mid,A,n);
+
+        //cout << j << endl;
+        if(j==k)
+        {
+            pass = true;
+            break;
+        }
+
+        if(j<k)
+        {
+            low=mid+1;
+        }
+        else if(j>k)
+        {
+            high=mid-1;
+        }
     }
 
-    if(y!=k)
+    if(!pass)
     {
         cout << "No" << endl; return;
     }
-    else
+
+    cout << "Yes" << endl;
+    for(int i=1;i<=n;i++)
     {
-        cout << "Yes" << endl;
-        for(int i=1;i<=n;i++)
-        {
-            cout << A[i] << " ";
-        }
-        cout << endl;
+        cout << A[i] << " ";
     }
+    cout << endl;
 }
 
 int32_t main()
