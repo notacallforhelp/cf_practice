@@ -6,7 +6,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 
-#define int long long
 typedef long long ll;
 typedef long double ld;
 
@@ -75,7 +74,7 @@ int64_t pw(int64_t a, int64_t b) {
 int64_t C(int64_t n, int64_t k) {
 	if(n < k) return 0LL;
 	return (fact[n] * pw((fact[n - k] * fact[k]) % mod, mod - 2)) % mod;
-    // return fact[n]*%mod*ifact[n-k]%mod*ifact[k]%mod;
+    // return fact[n]%mod*ifact[n-k]%mod*ifact[k]%mod;
 }
 
 ifact[N-1] = pw(fact[N-1],mod-2);
@@ -145,115 +144,110 @@ void sieve(int n,vector<bool> &prime)
 }
 prime[0]=prime[1]=false;
 
+
+DSU
+
+const int N = 2e5+10;
+int parent[N];int size[N];
+
+void make(int v)
+{
+    parent[v]=v;
+    size[v]=1;
+}
+
+int find(int v)
+{
+    if(v==parent[v]) return v;
+    //path compression
+    return parent[v] = find(parent[v]);
+}
+
+void Union(int a,int b)
+{
+    a = find(a); b = find(b);
+    if(a!=b)
+    {
+        //union by size
+        if(size[a]<size[b]) swap(a,b); 
+        parent[b]=a;
+        size[a] += size[b];
+    }
+}
+
+DJIKSTRA
+
+vector<bool> vis(n);
+set<pair<int,int>> s;  // {dist,node}
+s.insert({0,src})
+vector<int> dist(n,INF); dist[src]=0;
+
+while(!s.empty())
+{
+    auto it = s.begin();
+    int v = it->second;
+    int d = it->first;
+    s.erase(it);
+
+    if(vis[v]) continue;
+    vis[v]=1;
+
+    for(auto [child,wt]:adj[v])
+    {
+        if(!vis[child[ && dist[v]+wt<dist[child])
+        {
+            //optional
+            auto old = s.find({dist[child],child});
+            if(old!=s.end()) s.erase(old);
+
+            dist[child]=dist[v]+wt;
+            s.insert({dist[child],child});
+        }
+    }
+}
+
+too many modulos then use this
+
+void add_self(int &a,int b)
+{
+    a += b;
+    if(a>=mod) a-=mod;
+}
+
+void self_min(int &a,int b)
+{
+    a = min(a,b);
+}
+
+void self_max(int &a,int b)
+{
+    a = max(a,b);
+}
+
+example of iterative dfs
+auto dfs = [&](auto&& self, TreeNode* node) -> int {
+    if (!node) return 0;
+    return 1 + max(self(self, node->left), self(self, node->right));
+};
+return dfs(dfs, root);
+
 */
 
 /*void setIO(string s) {
 	freopen((s + ".in").c_str(), "r", stdin);
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
-const int N = 2e5+10;
-vector<int> F[N];
-vector<int> G[N];
-vector<int> comp1(N);
-vector<int> comp2(N); //G ka comp idx
-vector<int> vis(N);
-
-void dfsG(int vertex,int idx)
-{
-    if(vis[vertex]) return;
-    vis[vertex]=true;
-
-    comp2[vertex]=idx;
-
-    for(auto &child:G[vertex])
-    {
-        dfsG(child,idx);
-    }
-
-    return;
-}
-
-void dfsF(int vertex,int idx)
-{
-    if(vis[vertex]) return;
-    vis[vertex]=true;
-
-    comp1[vertex]=idx;
-
-    for(auto &child:F[vertex])
-    {
-        dfsF(child,idx);
-    }
-
-    return;
-}
 
 void solve()
 {
-    int n, m1, m2; cin>>n>>m1>>m2;
+    int l, r; cin>>l>>r;
+    int k = 31-__builtin_clz(l^r);
 
-    vector<pair<int,int>> F_edges;
-    for(int i=0;i<m1;i++)
-    {
-        int u, v; cin>>u>>v; --u;--v;
-        F_edges.push_back({u,v});
-    }
+    int a = l | ((1ll<<k)-1);
+    int b = a+1;
+    int c = (a==l?r:l);
 
-    for(int i=0;i<m2;i++)
-    {
-        int u,v; cin>>u>>v; --u;--v;
-        G[u].push_back(v); G[v].push_back(u);
-    }
-
-    int cc_in_G = 0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(!vis[i])
-        {
-            dfsG(i,cc_in_G);
-            ++cc_in_G;
-        }
-    }
-
-    int op = 0;
-
-    for(auto [u,v]:F_edges)
-    {
-        if(comp2[u]==comp2[v])
-        {
-            F[u].push_back(v);
-            F[v].push_back(u);
-        }
-        else
-        {
-            ++op;
-        }
-    }
-
-    int cc_in_F = 0;
-
-    for(int i=0;i<n;i++) vis[i]=0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(!vis[i])
-        {
-            dfsF(i,cc_in_F);
-            ++cc_in_F;
-        }
-    }
-
-    int output = op + (cc_in_F-cc_in_G);
-    cout << output << endl;
-
-    for(int i=0;i<n;i++)
-    {
-        vis[i]=0;
-        F[i].clear(); G[i].clear();
-        comp1[i]=comp2[i]=0;
-    }
-
+    cout << a << " " << b << " " << c << endl;
 }
 
 int32_t main()
@@ -262,7 +256,15 @@ int32_t main()
 
     //setIO("problemname");
 
+
     int t; cin>>t;
+
+    /*for(int i=0;i<t;i++)
+    {
+        int a,b,c;cin>>a>>b>>c;
+        cout << (a^b)+(b^c)+(c^a) << endl;
+    }
+    cout << endl;*/
 
     while(t--)
     {

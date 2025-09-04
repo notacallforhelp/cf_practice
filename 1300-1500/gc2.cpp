@@ -145,115 +145,137 @@ void sieve(int n,vector<bool> &prime)
 }
 prime[0]=prime[1]=false;
 
+
+DSU
+
+const int N = 2e5+10;
+int parent[N];int size[N];
+
+void make(int v)
+{
+    parent[v]=v;
+    size[v]=1;
+}
+
+int find(int v)
+{
+    if(v==parent[v]) return v;
+    //path compression
+    return parent[v] = find(parent[v]);
+}
+
+void Union(int a,int b)
+{
+    a = find(a); b = find(b);
+    if(a!=b)
+    {
+        //union by size
+        if(size[a]<size[b]) swap(a,b); 
+        parent[b]=a;
+        size[a] += size[b];
+    }
+}
+
+DJIKSTRA
+
+vector<bool> vis(n);
+set<pair<int,int>> s;  // {dist,node}
+s.insert({0,src})
+vector<int> dist(n,INF); dist[src]=0;
+
+while(!s.empty())
+{
+    auto it = s.begin();
+    int v = it->second;
+    int d = it->first;
+    s.erase(it);
+
+    if(vis[v]) continue;
+    vis[v]=1;
+
+    for(auto [child,wt]:adj[v])
+    {
+        if(!vis[child[ && dist[v]+wt<dist[child])
+        {
+            //optional
+            auto old = s.find({dist[child],child});
+            if(old!=s.end()) s.erase(old);
+
+            dist[child]=dist[v]+wt;
+            s.insert({dist[child],child});
+        }
+    }
+}
+
 */
 
 /*void setIO(string s) {
 	freopen((s + ".in").c_str(), "r", stdin);
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
-const int N = 2e5+10;
-vector<int> F[N];
-vector<int> G[N];
-vector<int> comp1(N);
-vector<int> comp2(N); //G ka comp idx
-vector<int> vis(N);
 
-void dfsG(int vertex,int idx)
+void read_con_list(vector<vector<int>> &sl,int m)
 {
-    if(vis[vertex]) return;
-    vis[vertex]=true;
-
-    comp2[vertex]=idx;
-
-    for(auto &child:G[vertex])
+    for(int i=0;i<m;i++)
     {
-        dfsG(child,idx);
+        int u, v; cin>>u>>v;
+        sl[--u].emplace_back(--v);
+        sl[v].emplace_back(u);
     }
-
-    return;
 }
 
-void dfsF(int vertex,int idx)
+void Gdfs(int v,vector<vector<int>> &sl, vector<int> &col,int c)
 {
-    if(vis[vertex]) return;
-    vis[vertex]=true;
-
-    comp1[vertex]=idx;
-
-    for(auto &child:F[vertex])
+    col[v]=c;
+    for(int u:sl[v])
     {
-        dfsF(child,idx);
+        if(col[u]==0)
+        {
+            Gdfs(u,sl,col,c);
+        }
     }
+}
 
-    return;
+int Fdfs(int v,vector<vector<int>> &sl, vector<int> &col,vector<int>&old_col,int c)
+{
+    col[v]=c;
+    int res = 0;
+    for(int u:sl[v])
+    {
+        if(col[u]==0)
+        {
+            if(old_col[u]!=c) res++;
+            else res += Fdfs(u,sl,col,old_col,c);
+        }
+    }
+    return res;
 }
 
 void solve()
 {
-    int n, m1, m2; cin>>n>>m1>>m2;
+    int n, mf, mg;
+    cin>>n>>mf>>mg;
+    vector<vector<int>> fsl(n), gsl(n);
+    read_con_list(fsl,mf);
+    read_con_list(gsl,mg);
 
-    vector<pair<int,int>> F_edges;
-    for(int i=0;i<m1;i++)
-    {
-        int u, v; cin>>u>>v; --u;--v;
-        F_edges.push_back({u,v});
-    }
-
-    for(int i=0;i<m2;i++)
-    {
-        int u,v; cin>>u>>v; --u;--v;
-        G[u].push_back(v); G[v].push_back(u);
-    }
-
-    int cc_in_G = 0;
+    vector<int> fcol(n), gcol(n);
+    int ans = 0;
 
     for(int i=0;i<n;i++)
     {
-        if(!vis[i])
+        if(gcol[i]==0)
         {
-            dfsG(i,cc_in_G);
-            ++cc_in_G;
+            Gdfs(i, gsl, gcol, i+1);
+        }
+        if(fcol[i]==0)
+        {
+            ans += Fdfs(i,fsl,fcol,gcol,gcol[i]);
+            if(gcol[i]<i+1) ans++;
         }
     }
 
-    int op = 0;
-
-    for(auto [u,v]:F_edges)
-    {
-        if(comp2[u]==comp2[v])
-        {
-            F[u].push_back(v);
-            F[v].push_back(u);
-        }
-        else
-        {
-            ++op;
-        }
-    }
-
-    int cc_in_F = 0;
-
-    for(int i=0;i<n;i++) vis[i]=0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(!vis[i])
-        {
-            dfsF(i,cc_in_F);
-            ++cc_in_F;
-        }
-    }
-
-    int output = op + (cc_in_F-cc_in_G);
-    cout << output << endl;
-
-    for(int i=0;i<n;i++)
-    {
-        vis[i]=0;
-        F[i].clear(); G[i].clear();
-        comp1[i]=comp2[i]=0;
-    }
-
+    cout << ans << endl;
 }
 
 int32_t main()

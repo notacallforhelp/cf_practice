@@ -145,115 +145,78 @@ void sieve(int n,vector<bool> &prime)
 }
 prime[0]=prime[1]=false;
 
+
+DSU
+
+const int N = 2e5+10;
+int parent[N];int size[N];
+
+void make(int v)
+{
+    parent[v]=v;
+    size[v]=1;
+}
+
+int find(int v)
+{
+    if(v==parent[v]) return v;
+    //path compression
+    return parent[v] = find(parent[v]);
+}
+
+void Union(int a,int b)
+{
+    a = find(a); b = find(b);
+    if(a!=b)
+    {
+        //union by size
+        if(size[a]<size[b]) swap(a,b); 
+        parent[b]=a;
+        size[a] += size[b];
+    }
+}
+
 */
 
 /*void setIO(string s) {
 	freopen((s + ".in").c_str(), "r", stdin);
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
-const int N = 2e5+10;
-vector<int> F[N];
-vector<int> G[N];
-vector<int> comp1(N);
-vector<int> comp2(N); //G ka comp idx
-vector<int> vis(N);
 
-void dfsG(int vertex,int idx)
+vector<int> djikstra(int V,vector<vector<int>> adj[],int S)
 {
-    if(vis[vertex]) return;
-    vis[vertex]=true;
+    priority_queue<pair<int,int>,vector<pair<int,int>>, greater<pair<int,int>>> pq;
+    vector<int> dist(V);
 
-    comp2[vertex]=idx;
+    for(int i=0;i<V;i++) dist[i] = 1e9;
 
-    for(auto &child:G[vertex])
+    dist[S]=0;
+    pq.push({0,S});
+
+    while(!pq.empty())
     {
-        dfsG(child,idx);
+        int dis = pq.top().first;
+        int node = pq.top().second;
+        pq.pop();
+
+        for(auto it:adj[node])
+        {
+            int edgeweight = it[1];
+            int adjnode = it[0];
+
+            if(dis + edgeweight < dist[adjnode])
+            {
+                dist[adjnode]=dis+edgeweight;
+                pq.push({dist[adjnode],adjnode});
+            }
+        }
     }
-
-    return;
-}
-
-void dfsF(int vertex,int idx)
-{
-    if(vis[vertex]) return;
-    vis[vertex]=true;
-
-    comp1[vertex]=idx;
-
-    for(auto &child:F[vertex])
-    {
-        dfsF(child,idx);
-    }
-
-    return;
+    return dist;
 }
 
 void solve()
 {
-    int n, m1, m2; cin>>n>>m1>>m2;
-
-    vector<pair<int,int>> F_edges;
-    for(int i=0;i<m1;i++)
-    {
-        int u, v; cin>>u>>v; --u;--v;
-        F_edges.push_back({u,v});
-    }
-
-    for(int i=0;i<m2;i++)
-    {
-        int u,v; cin>>u>>v; --u;--v;
-        G[u].push_back(v); G[v].push_back(u);
-    }
-
-    int cc_in_G = 0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(!vis[i])
-        {
-            dfsG(i,cc_in_G);
-            ++cc_in_G;
-        }
-    }
-
-    int op = 0;
-
-    for(auto [u,v]:F_edges)
-    {
-        if(comp2[u]==comp2[v])
-        {
-            F[u].push_back(v);
-            F[v].push_back(u);
-        }
-        else
-        {
-            ++op;
-        }
-    }
-
-    int cc_in_F = 0;
-
-    for(int i=0;i<n;i++) vis[i]=0;
-
-    for(int i=0;i<n;i++)
-    {
-        if(!vis[i])
-        {
-            dfsF(i,cc_in_F);
-            ++cc_in_F;
-        }
-    }
-
-    int output = op + (cc_in_F-cc_in_G);
-    cout << output << endl;
-
-    for(int i=0;i<n;i++)
-    {
-        vis[i]=0;
-        F[i].clear(); G[i].clear();
-        comp1[i]=comp2[i]=0;
-    }
-
+    
 }
 
 int32_t main()
@@ -262,12 +225,32 @@ int32_t main()
 
     //setIO("problemname");
 
-    int t; cin>>t;
+   priority_queue<int> mx;
 
-    while(t--)
-    {
-        solve();
-    }
+   priority_queue<int,vector<int>, greater<int>> mn;
 
-    return 0;
+   mx.push(5);
+   mx.push(25);
+   mx.push(33);
+
+   mx.swap(mn);
+   mn.push(5);
+   mn.push(25);
+   mn.push(33);
+
+   while (!mx.empty())
+   {
+    cout << mx.top() << " ";
+    mx.pop();
+   }
+   cout << endl;
+
+   while(!mn.empty())
+   {
+    cout << mn.top() << " ";
+    mn.pop();
+   }
+   cout << endl;
+
+   return 0;
 }
