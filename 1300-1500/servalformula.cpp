@@ -234,6 +234,43 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
+PROBABILITY / DP Functions
+
+const int MOD = 998244353;
+
+int add(int x, int y) {
+   x += y;
+   if (x >= MOD) x -= MOD;
+   if (x < 0) x += MOD;
+   return x;
+}
+ 
+int mul(int x, int y) {
+  return x * 1LL * y % MOD;
+}
+ 
+int binpow(int x, int y) {
+  int z = 1;
+  while (y) {
+    if (y & 1) z = mul(z, x);
+    x = mul(x, x);
+    y >>= 1;
+  }
+  return z;
+}
+ 
+int divide(int x, int y) {
+  return mul(x, binpow(y, MOD - 2));
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +278,32 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int x,y; cin>>x>>y;
+    if(x==y)
+    {
+        cout << -1 << endl; return;
+    }
 
-    for(auto &ele:A) cin>>ele;
+    int mx = max(x,y);
+    int mn = min(x,y);
 
-    bool ans = false;
+    int k = 0;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    int pw = 1;
 
-    cout << (ans?"Yes\n":"No\n");
+    while(pw<mx)
+    {
+        pw <<=1;
+    }
+
+    cout << pw-mx << endl;
+
 }
 
 int32_t main()

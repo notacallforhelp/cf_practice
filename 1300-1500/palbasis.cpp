@@ -241,42 +241,50 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
+const int mod = 1e9+7;
+
+const int N = 4e4+10;
+int dp[N+1];
+
+void add_self(int &a,int b)
 {
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
+    a += b;
+    if(a>=mod) a-=mod;
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
-
-    for(auto &ele:A) cin>>ele;
-
-    bool ans = false;
-
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
-
-    cout << (ans?"Yes\n":"No\n");
+    int n; cin>>n;
+    cout << dp[n] << endl;
 }
 
 int32_t main()
 {
     ios_base::sync_with_stdio(false);cin.tie(0);cout.precision(20);
+
+    dp[0]=1;
+
+    auto check = [&](int a)
+    {
+        string k = to_string(a);
+        string b = k;
+        reverse(k.begin(),k.end());
+        return k==b;
+    };
+
+    for(int i=1;i<=N;i++)
+    {
+        if(check(i))
+        {
+            for(int j=1;j<=N;j++)
+            {
+                if(j-i>=0)
+                {
+                    add_self(dp[j],dp[j-i]);
+                }
+            }
+        }
+    }
 
     //setIO("problemname");
 

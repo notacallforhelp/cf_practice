@@ -234,6 +234,43 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
+PROBABILITY / DP Functions
+
+const int MOD = 998244353;
+
+int add(int x, int y) {
+   x += y;
+   if (x >= MOD) x -= MOD;
+   if (x < 0) x += MOD;
+   return x;
+}
+ 
+int mul(int x, int y) {
+  return x * 1LL * y % MOD;
+}
+ 
+int binpow(int x, int y) {
+  int z = 1;
+  while (y) {
+    if (y & 1) z = mul(z, x);
+    x = mul(x, x);
+    y >>= 1;
+  }
+  return z;
+}
+ 
+int divide(int x, int y) {
+  return mul(x, binpow(y, MOD - 2));
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +278,55 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
-
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n,m,k; cin>>n>>m>>k;
 
-    for(auto &ele:A) cin>>ele;
+    if((m+1)*k>=n)
+    {
+        int v = 0;
+        for(int i=0;i<n;i++)
+        {
+            cout << v%k << " ";
+            ++v;
+        }
+        cout << endl; return;
+    }
 
-    bool ans = false;
+    int len = k;
+    int extra = max(n-(m+1)*k,0ll);
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    //cout << extra << endl;
 
-    cout << (ans?"Yes\n":"No\n");
+    len += extra/(m+1);
+
+    //cout << len << endl;
+
+    int somelen = len + 1;
+
+    int some = extra%(m+1);
+
+    //cout << some << endl;
+
+    //cout << len << " " << somelen << endl;
+
+    map<int,int> M;
+    M[somelen]=some;
+    M[len] = ((m+1)-some);
+
+    for(auto &[u,v]:M)
+    {
+        for(int k=0;k<v;k++)
+        {
+            for(int i=0;i<u;i++)
+            {
+                cout << i << " ";
+            }
+        }
+    }
+
+    cout << endl;
+
 }
 
 int32_t main()

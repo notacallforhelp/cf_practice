@@ -234,6 +234,16 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
+
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +251,73 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
+const int MOD = 998244353;
 
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
+int add(int x, int y) {
+   x += y;
+   if (x >= MOD) x -= MOD;
+   if (x < 0) x += MOD;
+   return x;
+}
+ 
+int mul(int x, int y) {
+  return x * 1LL * y % MOD;
+}
+ 
+int binpow(int x, int y) {
+  int z = 1;
+  while (y) {
+    if (y & 1) z = mul(z, x);
+    x = mul(x, x);
+    y >>= 1;
+  }
+  return z;
+}
+ 
+int divide(int x, int y) {
+  return mul(x, binpow(y, MOD - 2));
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n, m; cin>>n>>m;
+    vector<vector<pair<int,int>>> A(m+1);
 
-    for(auto &ele:A) cin>>ele;
+    for(int i=0;i<n;i++)
+    {
+        int l,r,p,q; cin>>l>>r>>p>>q;
+        --l;
+        A[r].push_back({l,divide(p,q)});
+    }
 
-    bool ans = false;
+    vector<int> pr(m+1);
+    pr[0]=1;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    for(int i=1;i<=m;i++)
+    {
+        int cur = 1;
+        for(auto [_,p]:A[i]){
+            cur = mul(cur,add(1,-p));
+        }
+        pr[i]=mul(pr[i-1],cur);
+    }
 
-    cout << (ans?"Yes\n":"No\n");
+    vector<int> dp(m+1);
+    dp[0]=1;
+
+    for(int i=1;i<=m;i++)
+    {
+        for(auto [l,p]:A[i])
+        {
+            int cur = divide(pr[i],pr[l]);
+            cur = divide(cur,add(1,-p));
+            cur = mul(cur,p);
+            dp[i]=add(dp[i],mul(dp[l],cur));
+        }
+    }
+
+    cout << dp[m] << endl;
+
 }
 
 int32_t main()
@@ -280,7 +326,7 @@ int32_t main()
 
     //setIO("problemname");
 
-    int t; cin>>t;
+    int t=1; //cin>>t;
 
     while(t--)
     {

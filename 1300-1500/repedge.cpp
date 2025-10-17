@@ -234,6 +234,14 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +249,46 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
-
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
 
-    for(auto &ele:A) cin>>ele;
 
-    bool ans = false;
+    vector<double> A(n);
+    for(auto &ele:A)cin>>ele;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    if(n<=2)
+    {
+        cout << 0 << endl; return;
+    }
 
-    cout << (ans?"Yes\n":"No\n");
+    int ans = 1e9;
+
+    for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+        {
+            ld d = A[j]-A[i];
+            d = d/(j-i);
+
+            ld val = ld(A[i])-d*i;
+            int curr = 0;
+
+            for(int k=0;k<n;k++)
+            {
+                if(abs(A[k]-val)>1e-6)
+                {
+                    ++curr;
+                }
+                val += d;
+            }
+            ans = min(ans,curr);
+        }
+    }
+    
+    cout << ans << endl;
+
+    
 }
 
 int32_t main()

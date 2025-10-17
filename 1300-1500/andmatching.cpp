@@ -234,6 +234,14 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +249,64 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
+    int k; cin>>k;
 
-    for(auto &ele:A) cin>>ele;
+    if(n==4&&k==n-1)
+    {
+        cout << -1 << endl; return;
+    }
 
-    bool ans = false;
+    if(k==n-1)
+    {
+        int res = 0;
+        cout << n-2 << " " << n-1 << endl; res += (n-2)&(n-1);
+        cout << 1 << " " << 3 << endl; res += 1&3;
+        cout << 0 << " " << n-4 << endl; res += 0&(n-4);
+        set<int> used;
+        used.insert(0);
+        used.insert(n-4);
+        used.insert(n-2);
+        used.insert(n-1);
+        used.insert(1);
+        used.insert(3);
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+        for(int i=0;i<n/2;i++)
+        {
+            if(used.count(i)) continue;
+            cout << i << " " << n-i-1 << endl; res += (i)&(n-i-1);
+        }
 
-    cout << (ans?"Yes\n":"No\n");
+        //cout << res << endl;
+
+        return;
+    }
+
+    int res = 0;
+
+    cout << k << " " << n-1 << endl; res += (k)&(n-1);
+    if(k!=0)
+    {
+        cout << 0 << " " << n-k-1 << endl; res += (0)&(n-k-1);
+    }
+    
+
+    set<int> used; used.insert(k); used.insert(n-1);
+    used.insert(0); used.insert(n-k-1);
+
+    for(int i=0;i<n/2;i++)
+    {
+        if(used.count(i)) continue;
+        cout << i << " " << n-i-1 << endl; res += i&(n-i-1);
+    }
+
+   //cout << res << endl;
 }
 
 int32_t main()

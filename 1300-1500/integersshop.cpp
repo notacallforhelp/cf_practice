@@ -234,6 +234,14 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +249,48 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
-
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
+    int right = -1;
+    int left = 1e12;
+    int costL = 1e12;
+    int costR = 1e12;
+    int maxlen = 0;
+    int costlen = 1e12;
 
-    for(auto &ele:A) cin>>ele;
+    for(int i=0;i<n;i++)
+    {
+        int l,r,c; cin>>l>>r>>c;
+        if(l<=left)
+        {
+            if(l<left) costL = 1e12;
+            left=l;
+            costL = min(costL,c);
+        }
+        if(r>=right)
+        {
+            if(r>right) costR = 1e12;
+            right=r;
+            costR = min(costR,c);
+        }
 
-    bool ans = false;
+        if(r-l+1>=maxlen)
+        {
+            if(r-l+1>maxlen) costlen = 1e12;
+            maxlen = r-l+1;
+            costlen = min(costlen,c);
+        }
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+        int ans = costL + costR;
 
-    cout << (ans?"Yes\n":"No\n");
+        if(right-left+1==maxlen)
+        {
+            ans = min(ans,costlen);
+        }
+
+        cout << ans << endl;
+    }
 }
 
 int32_t main()

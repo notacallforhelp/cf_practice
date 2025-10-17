@@ -234,6 +234,43 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
+PROBABILITY / DP Functions
+
+const int MOD = 998244353;
+
+int add(int x, int y) {
+   x += y;
+   if (x >= MOD) x -= MOD;
+   if (x < 0) x += MOD;
+   return x;
+}
+ 
+int mul(int x, int y) {
+  return x * 1LL * y % MOD;
+}
+ 
+int binpow(int x, int y) {
+  int z = 1;
+  while (y) {
+    if (y & 1) z = mul(z, x);
+    x = mul(x, x);
+    y >>= 1;
+  }
+  return z;
+}
+ 
+int divide(int x, int y) {
+  return mul(x, binpow(y, MOD - 2));
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +278,89 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
-
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
+    vector<int> A(n);for(auto &ele:A) cin>>ele;
+    vector<int> B(n); for(auto &ele:B) cin>>ele;
 
-    for(auto &ele:A) cin>>ele;
+    vector<vector<pair<int,int>>> pos(n+1);
 
-    bool ans = false;
+    for(int i=0;i<n;i++)
+    {
+        pos[A[i]].push_back({i,0});
+        pos[B[i]].push_back({i,1});
+    }
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    vector<bool> vis(n+1);
 
-    cout << (ans?"Yes\n":"No\n");
+    int output = 0;
+
+    for(int i=n-1;i>=0;i--)
+    {
+        bool used = false;
+        if(!vis[A[i]])
+        {
+            while(!pos[A[i]].empty())
+            {
+                int p = pos[A[i]].back().first;
+                int side = pos[A[i]].back().second;
+
+                if(p==i&&side==1)
+                {
+                    output = max(output,p+1);
+                }
+                else if(p==i-1&&side==0)
+                {
+                    output = max(output,p+1); 
+                }
+                else if((i-p)%2==0&&i!=p)
+                {
+                    output = max(output,p+1);
+                }
+                else if((i-p)%2!=0&&p!=i-1)
+                {
+                    output = max(output,p+1);
+                }
+
+                pos[A[i]].pop_back();
+            }
+        }
+        if(!vis[B[i]])
+        {
+            while(!pos[B[i]].empty())
+            {
+                int p = pos[B[i]].back().first;
+                int side = pos[B[i]].back().second;
+
+                if(p==i&&side==0)
+                {
+                    //used = true;
+                    output = max(output,p+1);
+                }
+                else if(p==i-1&&side==1)
+                {
+                    output = max(output,p+1); //used = true;
+                }
+                else if((i-p)%2==0&&i!=p)
+                {
+                    output = max(output,p+1);
+                }
+                else if((i-p)%2!=0&&p!=i-1)
+                {
+                    output = max(output,p+1);
+                }
+
+                pos[B[i]].pop_back();
+            }
+        }
+
+        vis[A[i]]=1;
+        vis[B[i]]=1;
+    }
+
+    cout << output << endl;
+    
 }
 
 int32_t main()

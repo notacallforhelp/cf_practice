@@ -241,37 +241,68 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
+const int INF = 1e9;
+
+int bestchoice(vector<int> &B,int cur)
 {
-    int total = 0;
-    bool atleast3 = false;
+    int bst = INF*10;
+    int pos = -1;
 
-    for(auto &ele:A)
+    for(int i=0;i<B.size();i++)
     {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
+        if(bst>abs(B[i]-cur))
+        {
+            bst = abs(B[i]-cur);
+            pos = i;
+        }
     }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
+    return pos;
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
+    vector<int> A(n);
+    vector<int> B(n);
 
-    for(auto &ele:A) cin>>ele;
+    for(int i=0;i<n;i++)
+    {
+        cin>>A[i];
+    }
+    for(int i=0;i<n;i++)
+    {
+        cin>>B[i];
+    }
 
-    bool ans = false;
+    int bst = 1e13;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    vector<int> g1 = {0,bestchoice(B,A[0]),n-1};
+    vector<int> g2 = {0,bestchoice(B,A[n-1]),n-1};
 
-    cout << (ans?"Yes\n":"No\n");
+    for(auto v1:g1)
+    {
+        for(auto v2:g2)
+        {
+            int ans = abs(A[0]-B[v1])+abs(A[n-1]-B[v2]);
+
+            if(v1>0&&v2>0)
+            {
+                int p =bestchoice(A,B[0]);
+                ans += abs(B[0]-A[p]);
+            }
+
+            if(v1<n-1&&v2<n-1)
+            {
+                int p = bestchoice(A,B[n-1]);
+                ans += abs(B[n-1]-A[p]);
+            }
+
+            bst = min(bst,ans);
+        }
+    }
+
+    cout << bst << endl;
+    
 }
 
 int32_t main()

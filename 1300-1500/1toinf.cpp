@@ -234,6 +234,14 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,37 +249,75 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
+int sumOfDigitsFrom1ToNUtil(int n, vector<int> &a) {
+    if (n < 10)
+        return (n * (n + 1) / 2);
 
-    for(auto &ele:A)
+    int d = 0; int temp = n;
+    while(n){d++;temp/=10;}
+
+    int p = 1;
+    for(int i=0;i<d;i++)
     {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
+        p*=10;
     }
 
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
+    int msd = n / p;
 
-    return true;
+    return (msd * a[d] + (msd * (msd - 1) / 2) * p 
+            + msd * (1 + n % p) + sumOfDigitsFrom1ToNUtil(n % p, a));
+}
+
+int sumOfDigits(int n) {
+
+    int d2 = 0; int temp = n;
+    while(temp){d2++;temp/=10;}
+    int d = max(d2, 1ll);
+    vector<int> a(d + 1);
+    a[0] = 0;
+    a[1] = 45;
+
+    int mul = 1;
+
+    for (int i = 2; i <= d; i++)
+        a[i] = a[i - 1] * 10 + 45 *mul;
+        mul*=10;
+
+    return sumOfDigitsFrom1ToNUtil(n, a);
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int k; cin>>k;
+    string s = "";
 
-    for(auto &ele:A) cin>>ele;
+    int num = 1;
+    int sum = 0;
 
-    bool ans = false;
+    while(s.size()<k)
+    {
+        int temp = num;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+        vector<int> digs; while(temp) {digs.push_back(temp%10); temp/=10;}
+        reverse(digs.begin(),digs.end());
+        int p = 0;
 
-    cout << (ans?"Yes\n":"No\n");
+        while(p<digs.size()&&s.size()<k)
+        {
+            sum += digs[p];
+            s.push_back(digs[p]+'0');
+            ++p;
+        }
+        ++num;
+    }
+
+    cout << s << endl;
+
+    cout << endl;
+
+    cout << sum << endl;
+
+
 }
 
 int32_t main()

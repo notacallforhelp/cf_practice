@@ -241,37 +241,38 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
+void solve()
 {
-    int total = 0;
-    bool atleast3 = false;
+    int n,k; cin>>n>>k;
+    vector<int> A(n);
+
+    int output = 0;
 
     for(auto &ele:A)
     {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
+        cin>>ele;
+        output += (ele)/k;
+        ele = ele%k;
     }
 
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
+    auto cmp = [&](int x,int y)
+    {
+        return x>y;
+    };
 
-    return true;
-}
+    sort(A.begin(),A.end(),cmp);
 
-void solve()
-{
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    for(int i=0,j=n-1;i<j;i++,j--)
+    {
+        while(A[i]+A[j]<k)
+        {
+            --j;
+        }
+        if(i<j) output ++;
+    }
 
-    for(auto &ele:A) cin>>ele;
+    cout << output << endl;
 
-    bool ans = false;
-
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
-
-    cout << (ans?"Yes\n":"No\n");
 }
 
 int32_t main()

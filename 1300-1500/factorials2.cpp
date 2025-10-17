@@ -241,42 +241,84 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
+vector<int> factorials={1};
+vector<int> powers={0,1};
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n; cin>>n;
 
-    for(auto &ele:A) cin>>ele;
+    int ans = 2e18;
 
-    bool ans = false;
+    vector<int> pos;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    set<int> f;
+    set<int> p;
 
-    cout << (ans?"Yes\n":"No\n");
+    for(auto &ele:factorials)
+    {
+        pos.push_back(ele);
+        f.insert(ele);
+    }
+
+    for(auto &ele:powers)
+    {
+        pos.push_back(ele);
+        p.insert(ele);
+    }
+
+    int k = pos.size();
+
+    for(int i=0;i<k;i++)
+    {
+        for(int j=i+1;j<k;j++)
+        {
+            int p = n - pos[i]-pos[j];
+            if(pos[i]+pos[j]>n) continue;
+            if(p==pos[i]&&p!=0) continue;
+            if(p==pos[j]&&p!=0) continue;
+
+            int curr = 0;
+
+            if(pos[i]) ++curr;
+            if(pos[j]) ++curr;
+
+            for(int bit=0;bit<=61;bit++)
+            {
+                if((1ll<<bit)&p) ++curr;
+            }
+
+            ans = min(ans,curr);
+        }
+    }
+
+    cout << ans << endl;
+
 }
 
 int32_t main()
 {
     ios_base::sync_with_stdio(false);cin.tie(0);cout.precision(20);
+
+    
+
+    for(int i=1;i<=1e5;i++)
+    {
+        if(factorials.back()*i>1e12) break;
+        factorials.push_back(factorials.back()*i);
+    }
+
+    for(int i=1;i<=1e5;i++)
+    {
+        if(powers.back()*2>1e12) break;
+        powers.push_back(powers.back()*2);
+    }
+
+    /*for(auto &ele:factorials)
+    {
+        cout << ele << " ";
+    }
+    cout << endl;*/
 
     //setIO("problemname");
 

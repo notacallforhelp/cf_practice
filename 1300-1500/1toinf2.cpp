@@ -234,6 +234,14 @@ return dfs(dfs, root);
 
 __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives first set bit of a 
 
+int get_first_bit(long long n){
+	return 63 - __builtin_clzll(n);
+}
+
+int get_bit_count(long long n){
+	return __builtin_popcountll(n);
+}
+
 */
 
 /*void setIO(string s) {
@@ -241,42 +249,147 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
+vector<int> num={0};
+vector<int> vals={0};
 
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
+ll ceil2(ll a, ll b) {
+    if (a == 0) return 0;
+    return (a - 1)/b + 1;
+}
+
+int sumOfDigitsFrom1ToNUtil(int n, vector<int> &a) {
+    if (n < 10)
+        return (n * (n + 1) / 2);
+
+    int d = 0; 
+    int temp = n;
+    while(temp > 0) {
+        d++;
+        temp /= 10;
+    }
+    
+    int p = 1;
+    for(int i = 1; i < d; i++) {  // Changed to d-1 iterations
+        p *= 10;
     }
 
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
+    int msd = n / p;
+    int remainder = n % p;
 
-    return true;
+    return (msd * a[d-1] + (msd * (msd - 1) / 2) * p 
+            + msd * (1 + remainder) + sumOfDigitsFrom1ToNUtil(remainder, a));
+}
+
+int sumOfDigits(int n) {
+    if (n <= 0) return 0;
+    
+    int d = 0; 
+    int temp = n;
+    while(temp > 0) {
+        d++;
+        temp /= 10;
+    }
+    
+    vector<int> a(d + 1);
+    a[0] = 0;
+    a[1] = 45;
+
+    int mul = 1;
+    for (int i = 2; i <= d; i++) {
+        mul *= 10;
+        a[i] = a[i - 1] * 10 + 45 * mul;
+    }
+
+    return sumOfDigitsFrom1ToNUtil(n, a);
 }
 
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int k; cin>>k;
+    int low = 0;
+    int high = num.size();
 
-    for(auto &ele:A) cin>>ele;
+    int ans = 0;
 
-    bool ans = false;
+    while(low<=high)
+    {
+        int mid = low + (high-low)/2;
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+        if(num[mid]<=k)
+        {
+            ans = max(ans,mid);
+            low=mid+1;
+        }
+        else
+        {
+            high=mid-1;
+        }
+    }
 
-    cout << (ans?"Yes\n":"No\n");
+    //cout << ans << endl;
+
+    int n = ceil2((k-num[ans]),(ans+1))+vals[ans];
+
+    //cout << n << endl;
+
+    int output = sumOfDigits(n-1);
+
+    //cout << output << endl;
+
+    string str = to_string(n);
+
+    if(((k-num[ans])%(ans+1))==0)
+    {
+        for(int i=0;i<str.size();i++)
+        {
+            output+=str[i]-'0';
+        }
+    }
+    else
+    {
+        for(int i=0;i<(k-num[ans])%(ans+1);i++)
+        {
+            output += str[i]-'0';
+        }
+    } 
+
+    cout << output << endl;
+
 }
 
 int32_t main()
 {
     ios_base::sync_with_stdio(false);cin.tie(0);cout.precision(20);
+
+    int val = 9;
+    int v2 = 9;
+
+    for(int i=1;i<=15;i++)
+    {
+        num.push_back(val*i+num.back());
+        vals.push_back(v2);
+        v2*=10;
+        v2+=9;
+        val*=10;
+    }
+
+    for(auto &ele:num)
+    {
+        cout << ele << " ";
+    }
+    cout << endl;
+
+    for(auto &ele:vals)
+    {
+        cout << ele << " ";
+    }
+    cout << endl;
+
+    /*for(int i=0;i<num.size();i++)
+    {
+        cout << num[i] << " ";
+    }
+    cout << endl;*/
 
     //setIO("problemname");
 

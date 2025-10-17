@@ -241,37 +241,63 @@ __builtin_clz(a); //returns count of leading zeroes of a, doing 31- that gives f
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-bool func(vector<int> &A,int n,int m,int k)
-{
-    int total = 0;
-    bool atleast3 = false;
-
-    for(auto &ele:A)
-    {
-        int p = ele/m;
-        if(p>2) atleast3=true;
-        if(p>=2) total += p;
-    }
-
-    if(total<n) return false;
-    if((n%2!=0)&&!atleast3) return false;
-
-    return true;
-}
-
 void solve()
 {
-    int n,m, k; cin>>n>>m>>k;
-    vector<int> A(k);
+    int n,k; cin>>n>>k;
+    string s; cin>>s;
 
-    for(auto &ele:A) cin>>ele;
+    char mx_ch = 'a';
+    int red = 0;
+    char min_ch = 'a';
+    int extra = k;
 
-    bool ans = false;
+    char other_ch = 'a';
 
-    ans |= func(A,n,m,k);
-    ans |= func(A,m,n,k);
+    /*for(auto &c:s)
+    {
+        cout << c-'a' << " ";
+    }
+    cout << endl;*/
 
-    cout << (ans?"Yes\n":"No\n");
+    for(auto &c:s)
+    {
+        int need = c-'a';
+        if(need<=k)
+        {
+            red = max(red,need);
+            mx_ch = max(mx_ch,c);
+        }
+        else
+        {
+            extra = k-red;
+            other_ch = c;
+            break;
+        }
+    }
+
+    //cout << red << endl;
+    //cout << mx_ch << endl;
+
+    //cout << extra << " " << other_ch << endl;
+
+    for(int i=0;i<n;i++)
+    {
+        if(s[i]<=mx_ch)
+        {
+            s[i]='a';
+        }
+        else if(s[i]<=other_ch&&s[i]>=other_ch-extra)
+        {
+            s[i]=other_ch-extra;
+        }
+    }
+
+    for(int i=0;i<n;i++)
+    {
+        cout << s[i];
+    }
+    cout << endl;
+
 }
 
 int32_t main()
