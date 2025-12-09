@@ -282,35 +282,40 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
     int n,k; cin>>n>>k;
+    string s; cin>>s;
+    int a[k];
+    int b[k];
+    for(int i=0;i<k;i++){cin>>a[i];--a[i];}
+    for(int i=0;i<k;i++){cin>>b[i];--b[i];}
+    int q;
+    cin>>q;
+    int cnt[n+1]={0};
+    for(int i=0;i<q;i++)
+    {
+        int x; cin>>x;
+        cnt[x-1]++;
+    }
+    string ans="";
     for(int i=0;i<k;i++)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        string s1 = s.substr(a[i],b[i]-a[i]+1);
+        int sum = 0;
+        int l = a[i];
+        int r = b[i];
+        for(int j=l;j<=(l+r)/2;j++)
         {
-            --n;
+            sum += cnt[j]+cnt[l+r-j];
+            if(sum&1) swap(s1[j-l],s1[r-j]);
         }
-        else
-        {
-            n-=2;
-        }
+        ans += s1;
     }
-    
-    dp[0]=dp[1]=1;
-
-    for(int i=2;i<=n;i++)
-    {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
-    }
-
-    cout << dp[n] << endl;
+    cout << ans << "\n";
 }
+
 
 int32_t main()
 {

@@ -282,34 +282,55 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    int n; cin>>n;
+    vector<int> b1,b2;
+    b2.push_back(1);
+    for(int i=0;i<n;i++)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        b1.push_back(i);
+    }
+    for(int i=1;i<n;i++)
+    {
+        cout << i << " " << i+1 << "\n";
+    }
+    int q; cin>>q;
+    while(q--)
+    {
+        int d; cin>>d; ++d;
+        if(b1.size()==d)
         {
-            --n;
+            cout << "-1 -1 -1\n";
+
+        }
+        else if(b1.size()<d)
+        {
+            d = d-b1.size();
+            int u = b2[b2.size()-d];
+            int v1 = b2[b2.size()-d-1];
+            int v2 = b1.back();
+            cout << u+1 << " " << v1+1 << " " << v2+1 << "\n";
+            vector<int> temp(b2.end()-d,b2.end());
+            for(int i=0;i<d;i++) b2.pop_back();
+            for(auto &ele:temp)
+            {
+                b1.push_back(ele);
+            }
         }
         else
         {
-            n-=2;
+            d = b1.size()-d;
+            int u = b1[b1.size()-d];
+            int v1 = b1[b1.size()-d-1];
+            int v2 = b2.back();
+            cout << u+1 << " " << v1+1 << " " << v2+1 << endl;
+            vector<int> temp(b1.end()-d,b1.end());
+            for(int i=0;i<d;i++) b1.pop_back();
+            for(auto &ele:temp) b2.push_back(ele);
         }
     }
-    
-    dp[0]=dp[1]=1;
-
-    for(int i=2;i<=n;i++)
-    {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
-    }
-
-    cout << dp[n] << endl;
 }
 
 int32_t main()

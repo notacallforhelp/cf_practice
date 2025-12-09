@@ -282,34 +282,71 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
+const int N = 1e5+10;
+vector<int> adj[N];
 
 void solve()
 {   
     int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    for(int i=0;i<n-1;i++)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        int u,v; cin>>u>>v;
+        --u;--v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    int low = 1;
+    int high = n/(k+1) + 1;
+
+    auto check = [&](int x)
+    {
+        int res = 0;
+
+        auto dfs = [&](auto self,int par,int v)->int{
+            int sz = 1;
+            for(auto &ele:adj[v])
+            {
+                if(ele==par) continue;
+                sz += self(self,v,ele);
+            }
+
+            if(sz>=x&&par!=v)
+            {
+                ++res;
+                sz=0;
+            }
+
+            return sz;
+        };
+
+        int t = dfs(dfs,0,0);
+
+        return (res>=k+1||(t>=x&&res==k))?true:false;
+    };
+
+    int ans = 0;
+
+    while(low<=high)
+    {
+        int mid = low + (high-low)/2;
+        if(check(mid))
         {
-            --n;
+            ans = max(ans,mid);
+            low=mid+1;
         }
         else
         {
-            n-=2;
+            high=mid-1;
         }
     }
-    
-    dp[0]=dp[1]=1;
 
-    for(int i=2;i<=n;i++)
+    cout << ans << endl;
+
+    for(int i=0;i<n;i++)
     {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
+        adj[i].clear();
     }
-
-    cout << dp[n] << endl;
 }
 
 int32_t main()

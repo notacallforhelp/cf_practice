@@ -282,34 +282,75 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
+    int n,m,k,d; cin>>n>>m>>k>>d;
+    vector<vector<int>> grid(n,vector<int>(m,0));
+
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<m;j++)
+        {
+            cin>>grid[i][j];
+            grid[i][j]++;
+        }
+    }
+
+    vector<int> vals;
+    vector<int> dp(m);
+
+    for(int i=0;i<n;i++)
+    {
+        multiset<int> s;
+        int v = 0;
+        for(int j=0;j<min(d+1,m);j++)
+        {
+            if(s.empty())
+            {
+                dp[j]=grid[i][j];
+            }
+            else
+            {
+                dp[j]= grid[i][j]+*s.begin();
+            }
+            //cout << dp[j] << " ";
+            s.insert(dp[j]);
+        }
+        //cout << endl;
+
+        for(int j=d+1;j<m;j++)
+        {
+            //cout << dp[j-d-1] << endl;
+            dp[j] = grid[i][j] + *s.begin();
+
+            //cout << dp[j] << " ";
+            auto it = s.lower_bound(dp[j-d-1]);
+            s.erase(it);
+            s.insert(dp[j]);
+        }
+        //cout << endl;
+        vals.push_back(dp[m-1]);
+    }
+
+    int output = 1e13;
+    int cur = 0;
+
     for(int i=0;i<k;i++)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
-        {
-            --n;
-        }
-        else
-        {
-            n-=2;
-        }
+        cur += vals[i];
     }
-    
-    dp[0]=dp[1]=1;
 
-    for(int i=2;i<=n;i++)
+    output = min(output,cur);
+
+    for(int i=k;i<n;i++)
     {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
+        cur -= vals[i-k];
+        cur += vals[i];
+        output = min(output,cur);
     }
 
-    cout << dp[n] << endl;
+    cout << output << endl;
 }
 
 int32_t main()

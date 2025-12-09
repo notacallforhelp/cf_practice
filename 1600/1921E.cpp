@@ -282,34 +282,57 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    int h,w,xa,ya,xb,yb; cin>>h>>w>>xa>>ya>>xb>>yb;
+    string winner;
+    bool win;
+    if((xa-xb)%2==0)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        winner = "Bob";
+        if(xa>=xb)
         {
-            --n;
+            win = false;
+        }
+        else if(ya==yb)
+        {
+            win = true;
         }
         else
         {
-            n-=2;
+            int n_turns;
+            if(ya<yb) n_turns = yb-1;
+            else n_turns = w-yb;
+
+            win =(xb - 2*n_turns)>=xa;
         }
     }
-    
-    dp[0]=dp[1]=1;
-
-    for(int i=2;i<=n;i++)
+    else
     {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
+        winner = "Alice";
+        xa += 1;
+        ya += (ya==yb?0:ya>yb?-1:1);
+
+        if(xa>xb)
+        {
+            win=false;
+        }
+        else if(ya==yb)
+        {
+            win= true;
+        }
+        else
+        {
+            int n_turns;
+            if(ya<yb) n_turns = w-ya;
+            else n_turns = ya-1;
+
+            win = (xb - 2*n_turns)>=xa;
+        }
     }
 
-    cout << dp[n] << endl;
+    cout << (win?winner:"Draw") << endl;
 }
 
 int32_t main()

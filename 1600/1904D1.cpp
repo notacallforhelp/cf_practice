@@ -282,34 +282,79 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    int n; cin>>n;
+    vector<int> A(n); for(auto &ele:A) cin>>ele;
+    vector<int> B(n); for(auto &ele:B) cin>>ele;
+
+    vector<pair<int,int>> issues;
+
+    auto checkB = [&](int l, int r, int target){
+        for(int i=l;i<=r;i++)
+            if(B[i] < target)
+                return false;
+        return true;
+    };
+
+    for(int i=0;i<n;i++)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        if(A[i]>B[i])
         {
-            --n;
+            cout << "NO" << endl; return;
         }
-        else
+
+        if(A[i]<B[i])
         {
-            n-=2;
+            issues.push_back({B[i],i});
         }
+    }
+
+    sort(issues.begin(),issues.end());
+
+    for(auto &[u,v]:issues)
+    {
+        int mx = A[v];
+        bool a = false; int left = -1;
+        bool b = false; int right = -1;
+
+        for(int i=v;i<n;i++)
+        {
+            mx = max(mx,A[i]);
+            if(mx>u) break;
+            if(mx==u)
+            {
+                right = i;
+                a = true;
+                break;
+            }
+        }
+
+        mx = A[v];
+        for(int i=v;i>=0;i--)
+        {
+            mx = max(mx,A[i]);
+            if(mx>u) break;
+            if(mx==u)
+            {
+                left = i;
+                b = true;
+                break;
+            }
+        }
+
+        if(a && !checkB(v, right, u)) a = false;
+        if(b && !checkB(left, v, u)) b = false;
+
+        if(!a&&!b)
+        {
+            cout << "NO" << endl; return;
+        }
+
     }
     
-    dp[0]=dp[1]=1;
-
-    for(int i=2;i<=n;i++)
-    {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
-    }
-
-    cout << dp[n] << endl;
+    cout << "YES" << endl;
 }
 
 int32_t main()

@@ -282,34 +282,30 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
-    {
-        int x,y; cin>>x>>y;
-        if(x==y)
-        {
-            --n;
-        }
-        else
-        {
-            n-=2;
-        }
-    }
-    
-    dp[0]=dp[1]=1;
+    string s; cin>>s;
+    int pos; cin>>pos;
+    --pos;
+    vector<char> st;
+    int curlen = s.size();
+    bool ok = pos < curlen;
+    s += '$';
 
-    for(int i=2;i<=n;i++)
+    for(auto c:s)
     {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
+        while(!ok&&st.size()>0&&c<st.back())
+        {
+            pos -= curlen;
+            --curlen;
+            st.pop_back();
+            if(pos<curlen) ok = true;
+        }
+        st.push_back(c);
     }
 
-    cout << dp[n] << endl;
+    cout << st[pos];
 }
 
 int32_t main()

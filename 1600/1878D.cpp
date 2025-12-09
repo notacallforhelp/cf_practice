@@ -282,34 +282,85 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
 
 void solve()
 {   
     int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    string s; cin>>s;
+    s = '$'+s;
+    vector<int> L(k), R(k);
+    for(auto &ele:L) cin>>ele;
+    for(auto &ele:R) cin>>ele;
+    int q; cin>>q;
+    vector<int> pf(n+1);
+    while(q--)
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        int x; cin>>x;
+        int low = 0;
+        int high = k-1;
+        int idx = 0;
+        while(low<=high)
         {
-            --n;
+            int mid = low + (high-low)/2;
+            if(L[mid]<=x)
+            {
+                idx = max(idx,mid);
+                low=mid+1;
+            }
+            else
+            {
+                high=mid-1;
+            }
         }
-        else
-        {
-            n-=2;
-        }
-    }
-    
-    dp[0]=dp[1]=1;
 
-    for(int i=2;i<=n;i++)
+        int sm = min(x,L[idx]+R[idx]-x);
+        int mx = max(x,L[idx]+R[idx]-x);
+        //cout << idx << " " << x << " " << L[idx]+R[idx]-x << endl;
+        pf[sm]++;
+        if(mx+1<=R[idx]) pf[mx+1]--;
+    }
+
+    /*for(auto &ele:pf)
     {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
+        cout << ele << " ";
+    }
+    cout << endl;*/
+
+    int curr = 0;
+
+    //cout << R[curr] << endl << endl; 
+
+    for(int i=1;i<=n;i++)
+    {
+        if(i>R[curr]) 
+        {
+            ++curr;
+            pf[i-1]=0;
+        }
+        if(i>(L[curr]+R[curr])/2)
+        {
+            continue;
+        }
+        pf[i]+=pf[i-1];
+        //cout << curr << " " << i << " " << L[curr]+R[curr]-i<<" "<<L[curr] << " " << R[curr] << endl;
+        if(pf[i]%2==1)
+        {
+            swap(s[i],s[L[curr]+R[curr]-i]);
+        }
+        //cout << s << endl;
     }
 
-    cout << dp[n] << endl;
+    for(int i=1;i<=n;i++)
+    {
+        cout <<s[i];
+    }
+    cout << endl;
+
+    /*for(auto &ele:pf)
+    {
+        cout << ele << " ";
+    }
+    cout << endl;*/
 }
 
 int32_t main()

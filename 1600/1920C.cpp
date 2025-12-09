@@ -282,39 +282,44 @@ uniform_int_distribution uni(1, 3);  // ={1,2,3}
 	freopen((s + ".out").c_str(), "w", stdout);
 }*/
 
-const int MOD = 1e9+7;
-const int N = 3e5+5;
-int dp[N];
+const int N = 2e5+10;
+vector<int> divisors[N];
+void find_divisors()
+{
+    for(int i=1;i<=N;i++)
+    {
+        for(int j=i;j<=N-1;j+=i)
+        {
+            divisors[j].push_back(i);
+        }
+    }
+}
 
 void solve()
 {   
-    int n,k; cin>>n>>k;
-    for(int i=0;i<k;i++)
+    int n; cin>>n;
+    vector<int> A(n); for(auto &ele:A) cin>>ele;
+    int output = 0;
+    for(auto &k:divisors[n])
     {
-        int x,y; cin>>x>>y;
-        if(x==y)
+        int g = 0;
+        for(int i=k;i<n;i++)
         {
-            --n;
+            g = __gcd(g,abs(A[i]-A[i-k]));
         }
-        else
+        if(g!=1)
         {
-            n-=2;
+            ++output;
         }
     }
-    
-    dp[0]=dp[1]=1;
-
-    for(int i=2;i<=n;i++)
-    {
-        dp[i] = (dp[i-1]+2ll*dp[i-2]*(i-1)%MOD)%MOD;
-    }
-
-    cout << dp[n] << endl;
+    cout << output << endl;
 }
 
 int32_t main()
 {
     ios_base::sync_with_stdio(false);cin.tie(0);cout.precision(20);
+
+    find_divisors();
 
     //setIO("problemname");
 
